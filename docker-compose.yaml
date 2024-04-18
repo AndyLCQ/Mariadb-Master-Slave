@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  db_master:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: your_root_password
+      MYSQL_DATABASE: your_database_name
+      MYSQL_USER: your_database_user
+      MYSQL_PASSWORD: your_database_password
+    networks:
+      - db_network
+    volumes:
+      - master_data:/var/lib/mysql
+      - ${PWD}/master.cnf:/etc/mysql/conf.d/master.cnf
+
+  db_slave:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: your_root_password
+      MYSQL_DATABASE: your_database_name
+      MYSQL_USER: your_database_user
+      MYSQL_PASSWORD: your_database_password
+      MYSQL_MASTER_HOST: db_master
+      MYSQL_MASTER_USER: your_replication_user
+      MYSQL_MASTER_PASSWORD: your_replication_password
+    networks:
+      - db_network
+    volumes:
+      - slave_data:/var/lib/mysql
+      - ${PWD}/slave.cnf:/etc/mysql/conf.d/slave.cnf
+
+networks:
+  db_network:
+
+volumes:
+  master_data:
+  slave_data:
